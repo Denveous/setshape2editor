@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-        <link rel="shortcut icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACbUlEQVQ4y52P20uTcRzGn9972MEdHBvOw1JZZk4dTjyXhGEGUgkWFJH1P3QTQXgVne6UThCEFxVBYWVgWCCBQ6IM0cBkouLxTbc5NJzv67b39/66SG2pQfXcfPnC83y/n4fgP1RZd8JAeJ4nIDH+X8OFpQdyKE2063T6S5QmwgIAVNUdE0yWVCMhAGMbTgYQAjAAK5FwS2Zm5sGhgf6LvCC0rq4s3fBV13Z+HRwAceXuE1PtzisAvAD5/R0BwBisNkfxKbfsGdHcseHRQF35oYbHfW9ePZweH2kTIqEFc15Rme/chTOKOz+/eiMFgDCAEQBsKbzk6H/WQWrNU3pDZUW3v7fnqiJH72mUMmHzGdVojijq8vCrAQAgHoth/EMv0uk3+OfNpMwxnDbrSi9YNJrIwuwk45KJ2bYZi63jXVcXrMHPWLSWYH/jWfi/u+LrTGyKhCQOAITtlTcnpRSTYxNw5XkgGS1objyCGSmMZUXt9fe8OOnM2KPuOJAsjufg8RZCmplDia8IgigCAHhB0ADEQ4vzP327hdkGB8fxyHbnQhBFKLKMdUUBRzh9fVOLbtO7KwHZtklzEtpv3eyU12QZYLA50i+X1tRfH/74XtuVIJkkGo3iwe07jxi0+0Vl5a8bmk+vBr586jNZbW1bBIQQHiA81bQdB1SVQlW1YNXho63dTzuOuwuK07wVNXaAtwOAoFFKOY7kTEwHfRPTwR0UaiIBg8nsefv8ybW9Hm+9McWUPTo0GLLY7IGtunpDSkaK2VL4pyrOrNzzdmeWh+O4OGOANDX2UllbvRtamGUEfyczCDEk7ctgjALAD3gS6nZ20OQgAAAAAElFTkSuQmCC">
+    <link rel="shortcut icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACbUlEQVQ4y52P20uTcRzGn9972MEdHBvOw1JZZk4dTjyXhGEGUgkWFJH1P3QTQXgVne6UThCEFxVBYWVgWCCBQ6IM0cBkouLxTbc5NJzv67b39/66SG2pQfXcfPnC83y/n4fgP1RZd8JAeJ4nIDH+X8OFpQdyKE2063T6S5QmwgIAVNUdE0yWVCMhAGMbTgYQAjAAK5FwS2Zm5sGhgf6LvCC0rq4s3fBV13Z+HRwAceXuE1PtzisAvAD5/R0BwBisNkfxKbfsGdHcseHRQF35oYbHfW9ePZweH2kTIqEFc15Rme/chTOKOz+/eiMFgDCAEQBsKbzk6H/WQWrNU3pDZUW3v7fnqiJH72mUMmHzGdVojijq8vCrAQAgHoth/EMv0uk3+OfNpMwxnDbrSi9YNJrIwuwk45KJ2bYZi63jXVcXrMHPWLSWYH/jWfi/u+LrTGyKhCQOAITtlTcnpRSTYxNw5XkgGS1objyCGSmMZUXt9fe8OOnM2KPuOJAsjufg8RZCmplDia8IgigCAHhB0ADEQ4vzP327hdkGB8fxyHbnQhBFKLKMdUUBRzh9fVOLbtO7KwHZtklzEtpv3eyU12QZYLA50i+X1tRfH/74XtuVIJkkGo3iwe07jxi0+0Vl5a8bmk+vBr586jNZbW1bBIQQHiA81bQdB1SVQlW1YNXho63dTzuOuwuK07wVNXaAtwOAoFFKOY7kTEwHfRPTwR0UaiIBg8nsefv8ybW9Hm+9McWUPTo0GLLY7IGtunpDSkaK2VL4pyrOrNzzdmeWh+O4OGOANDX2UllbvRtamGUEfyczCDEk7ctgjALAD3gS6nZ20OQgAAAAAElFTkSuQmCC">
     <title>Setshape2 Editor</title>
     <style>
         body {
@@ -259,6 +259,8 @@
                 this.selectionStart = null;
                 this.selectionEnd = null;
                 this.currentSelection = null;
+                this.isDrawing = false;
+                this.drawMode = 0; // 0 = none, 1 = draw, 2 = erase
                 
                 this.adjustModalSize = () => {
                     const outputText = document.getElementById('outputText');
@@ -384,6 +386,7 @@
                 this.canvas.addEventListener('mousedown', (e) => this.onMouseDown(e));
                 this.canvas.addEventListener('mousemove', (e) => this.onMouseMove(e));
                 this.canvas.addEventListener('mouseup', (e) => this.onMouseUp(e));
+                this.canvas.addEventListener('mouseleave', (e) => this.onMouseLeave(e));
                 this.canvas.addEventListener('wheel', (e) => this.onMouseWheel(e));
                 this.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
                 
@@ -470,7 +473,9 @@
                     this.selectionEnd = {...this.selectionStart};
                     this.currentSelection = null;
                 } else {
-                    this.handleTileClick(e);
+                    this.isDrawing = true;
+                    this.drawMode = e.button === 0 ? 1 : 2; // 1 = draw, 2 = erase
+                    this.handleTileAction(x, y);
                 }
             }
             
@@ -500,8 +505,8 @@
                         this.selectionEnd = { x: worldX, y: worldY };
                     }
                     this.render();
-                } else if (e.buttons & 1 || e.buttons & 2) {
-                    this.handleTileClick(e);
+                } else if (this.isDrawing) {
+                    this.handleTileAction(x, y);
                 }
             }
             
@@ -521,7 +526,16 @@
                     
                     this.selectionStart = null;
                     this.selectionEnd = null;
+                } else if (e.button === 0 || e.button === 2) {
+                    this.isDrawing = false;
+                    this.drawMode = 0;
                 }
+            }
+            
+            onMouseLeave(e) {
+                this.isDrawing = false;
+                this.drawMode = 0;
+                this.isDragging = false;
             }
             
             onMouseWheel(e) {
@@ -542,11 +556,7 @@
                 this.render();
             }
             
-            handleTileClick(e) {
-                const rect = this.canvas.getBoundingClientRect();
-                const mouseX = e.clientX - rect.left;
-                const mouseY = e.clientY - rect.top;
-                
+            handleTileAction(mouseX, mouseY) {
                 const worldX = (mouseX - this.offsetX) / this.zoomLevel;
                 const worldY = (mouseY - this.offsetY) / this.zoomLevel;
                 
@@ -555,9 +565,9 @@
                 
                 if (tileX >= 0 && tileX < 64 && tileY >= 0 && tileY < 64) {
                     const index = tileX + tileY * 64;
-                    if (e.button === 0) {
+                    if (this.drawMode === 1) { // Draw
                         this.tileMap[index] = this.selectedBrush;
-                    } else if (e.button === 2) {
+                    } else if (this.drawMode === 2) { // Erase
                         this.tileMap[index] = 0;
                     }
                     this.render();
@@ -757,4 +767,4 @@
         });
     </script>
 </body>
-</html>         
+</html>

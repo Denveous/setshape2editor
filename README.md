@@ -2,7 +2,9 @@
 A tool for creating Graal setshape2 shapes and extracting image regions using setimgpart.
 
 **Web Version**: [Github](https://denveous.github.io/setshape2editor/)
+
 **Web Mirror**: [Moreno Land](https://moreno.land/setshape2)
+
 **Jar**: [Direct Download](https://github.com/Denveous/setshape2editor/releases/download/Release/SetShape2Gen-1.0-all.jar)
 
 - Generate setshape2 code output

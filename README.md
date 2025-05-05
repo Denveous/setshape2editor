@@ -20,4 +20,4 @@ A tool for creating Graal setshape2 shapes and extracting image regions using se
 4. Click "Generate" for setshape2 code
   Optional: Use "Cut" mode to extract image regions for setimgpart
 
-** Loosely based on Dusty's setshape2 GUI for Graal, setimgpart was not apart of that original gui. **
+**Loosely based on Dusty's setshape2 GUI for Graal, setimgpart was not apart of that original gui.**

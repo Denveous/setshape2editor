@@ -1,4 +1,4 @@
-# Setshape2Gen
+# setshape2editor
 A tool for creating Graal setshape2 shapes and extracting image regions using setimgpart.
 
 - Generate setshape2 code output

@@ -233,7 +233,7 @@
                 this.selectionEnd = null;
                 this.currentSelection = null;
                 this.isDrawing = false;
-                this.drawMode = 0; // 0 = none, 1 = draw, 2 = erase
+                this.drawMode = 0; 
                 this.adjustModalSize = () => {
                     const outputText = document.getElementById('outputText');
                     if (outputText && outputText.value && document.getElementById('outputModal').style.display === 'flex') {
@@ -591,17 +591,15 @@
                     this.ctx.drawImage(this.backgroundImage, 0, 0);
                 }
                 this.ctx.strokeStyle = '#3c3c3c';
-                for (let x = 0; x < 64; x++) {
-                    for (let y = 0; y < 64; y++) {
-                        this.ctx.strokeRect(x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
-                    }
-                }
+                for (let x = 0; x < 64; x++) for (let y = 0; y < 64; y++)
+                    this.ctx.strokeRect(x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
                 for (let i = 0; i < this.tileMap.length; i++) {
                     const tileId = this.tileMap[i];
                     if (tileId > 0 && tileId < this.tileTypes.length) {
                         const x = i % 64;
                         const y = Math.floor(i / 64);
                         const tileType = this.tileTypes[tileId];
+                        this.ctx.fillStyle = tileType.color;
                         this.ctx.fillRect(x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
                         this.ctx.strokeStyle = this.darkenColor(tileType.color);
                         this.ctx.strokeRect(x * this.tileSize, y * this.tileSize, this.tileSize, this.tileSize);
@@ -619,9 +617,7 @@
                         this.ctx.strokeRect(x, y, width, height);
                         this.ctx.fillStyle = 'white';
                         this.ctx.font = `${12 / this.zoomLevel}px Arial`;
-                        const text = `${Math.floor(width)} x ${Math.floor(height)}${
-                            this.selectionStart.x % this.tileSize === 0 && this.selectionStart.y % this.tileSize === 0 ? ' (snapped)' : ''
-                        }`;
+                        const text = `${Math.floor(width)} x ${Math.floor(height)}${this.selectionStart.x % this.tileSize === 0 && this.selectionStart.y % this.tileSize === 0 ? ' (snapped)' : ''}`;
                         this.ctx.fillText(text, x + 5, y - 5);
                     }
                     if (this.currentSelection) {
